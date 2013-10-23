@@ -49,8 +49,8 @@ def object_hook(obj):
             return o
     return obj
 
-def dumps(s, default=None):
-    return json.dumps(s, default=lambda o: type_hinter(o, default))
+def dumps(s, default=None, encoding='utf-8'):
+    return json.dumps(s, default=lambda o: type_hinter(o, default), encoding=encoding)
 
 def loads(s):
     return json.loads(s, object_hook=object_hook)

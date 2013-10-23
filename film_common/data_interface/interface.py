@@ -20,3 +20,9 @@ class BaseOutputFactoryInterface(object):
         """
         raise NotImplementedError("interface")
 
+    def filter(self, **lookup_params):
+        """
+            Returns collection of objects matching given lookup parameters.
+            Lookup params syntax is the same as QuerySet.filter
+        """
+        raise NotImplementedError("interface")

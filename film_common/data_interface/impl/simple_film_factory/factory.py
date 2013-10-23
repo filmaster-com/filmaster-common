@@ -1,11 +1,14 @@
-from data_interface.interface import BaseOutputFactoryInterface
-from data_interface.film_interface import DisplayableFilmInterface
+from film_common.data_interface.film_interface import DisplayableFilmInterface, DisplayableFilmFactoryInterface
+from film_common.utils import jsonrpc
 
+class SimpleDisplayableFilmFactory(DisplayableFilmFactoryInterface, jsonrpc.Service):
 
-class SimpleDisplayableFilmFactory(BaseOutputFactoryInterface):
-
-    def __init__(self, lang):
+    def __init__(self, lang='en'):
         self.lang = lang
+
+    @classmethod
+    def from_request(cls, request):
+        return cls(lang=request.GET.get('lang', 'en'))
 
     def get_from_db(self, object_id):
         """
@@ -32,17 +35,29 @@ class SimpleDisplayableFilmFactory(BaseOutputFactoryInterface):
             displayable_film_dict[film.id] = self.get_displayable_film(film)
         return displayable_film_dict
 
+    def filter(self, **lookup_params):
+        from film20.core.models import Film
+        return [self._get_displayable_film(f) for f in Film.objects.filter(**lookup_params)]
+
+    def get_images(self, id, type):
+        from film20.core.models import Poster
+        return [str(p.image) for p in Poster.objects.filter(image_type=type, object=id)]
+
+    def get_similar_films_ids_list(self, id):
+        from film20.core.models import SimilarFilm
+        return list(SimilarFilm.objects.filter(film_a=id).values_list('film_b', flat=True).order_by('-number_of_votes'))
+
     def _get_displayable_film(self, film):
         localized_film = film.get_localized_film(self.lang)
         title = localized_film.title
-        #TODO(check if this is the correct path)
-        poster_path = film.get_absolute_image_url()
+        poster_path = film.poster and film.poster.name
         description = localized_film.description or localized_film.fetched_description
         production_year = str(film.release_year)
-        production_countries_names_list = film.production_country_list.split(',')
+        production_countries_names_list = filter(bool, (film.production_country_list or '').split(','))
         characters_ids_list = [c.id for c in film.get_actors()]
         directors_ids_list = [d.id for d in film.get_directors()]
         return SimpleDisplayableFilm(
+                    id=film.id,
                     title=title,
                     poster_path=poster_path,
                     description=description,
@@ -53,20 +68,12 @@ class SimpleDisplayableFilmFactory(BaseOutputFactoryInterface):
 
 class SimpleDisplayableFilm(DisplayableFilmInterface):
 
-    def __init__(self, title, poster_path, description, production_year,
-                 production_countries_names_list,
-                 characters_ids_list, directors_ids_list):
+    def __init__(self, **kw):
         """
             For the format of the arguments check the
             DisplayableFilmInterface get methods.
         """
-        self.title = title
-        self.poster_path = poster_path
-        self.description = description
-        self.production_year = production_year
-        self.production_countries_names_list = production_countries_names_list
-        self.characters_ids_list = characters_ids_list
-        self.directors_ids_list = directors_ids_list
+        vars(self).update(kw)
 
     def get_title(self):
         return self.title
@@ -88,3 +95,7 @@ class SimpleDisplayableFilm(DisplayableFilmInterface):
 
     def get_directors_ids_list(self):
         return self.directors_ids_list
+
+    def __jsonhint__(self):
+        return self.__class__, [], self.__dict__
+

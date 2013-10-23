@@ -1,3 +1,15 @@
+from .interface import BaseOutputFactoryInterface
+
+class DisplayableFilmFactoryInterface(BaseOutputFactoryInterface):
+
+    IMAGE_TYPE_POSTER = 1
+    IMAGE_TYPE_BACKDROP = 2
+
+    def get_images(self, id, type):
+        raise NotImplementedError
+
+    def get_similar_films_ids_list(self, id):
+        raise NotImplementedError
 
 class DisplayableFilmInterface(object):
 
@@ -45,7 +57,13 @@ class DisplayableFilmInterface(object):
         """
         raise NotImplementedError("interface")
 
+    IMAGE_TYPE_POSTER = 1
+    IMAGE_TYPE_BACKDROP = 2
 
-
+    def get_images(self, type):
+        """
+            Returns film images of provided type
+        """
+        raise NotImplementedError("interface")
 
 
