@@ -66,4 +66,8 @@ class DisplayableFilmInterface(object):
         """
         raise NotImplementedError("interface")
 
+def get_default_displayable_film_factory():
+    from film_common.utils import jsonrpc
+    from django.conf import settings
+    return jsonrpc.Server(settings.DISPLAYABLE_FILM_FACTORY)
 
