@@ -24,6 +24,8 @@ def type_hinter(obj, default=None):
         if obj.tzinfo:
             args.append(_hint(pytz.FixedOffset, obj.tzinfo.utcoffset(obj).seconds / 60))
         return _hint(obj.__class__, *args)
+    elif isinstance(obj, datetime.date):
+        return _hint(obj.__class__, *obj.timetuple()[0:3])
     elif isinstance(obj, uuid.UUID):
         return _hint(uuid.UUID, str(obj))
     elif isinstance(obj, set):
