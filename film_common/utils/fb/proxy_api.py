@@ -1,0 +1,69 @@
+#from film_common.utils.jsonrpc import Server
+
+class ProxyAPI(object):
+
+    #def __init__(self, app_id):
+    #    from django.conf import settings
+    #    self.server = Server(settings.PROXY_URI)
+    #    self.server.connect(app_id)
+    #    return super(ProxyAPI, self).__init__()
+
+    #def get_friend_id_list(self, hash_id):
+    #    return self.server.get_friend_id_list(hash_id)
+
+    #def get_close_friends_list(self, hash_id):
+    #    return self.server.get_close_friends_list(hash_id)
+
+    #def get_family_list(self, hash_id):
+    #    return self.server.get_family_list(hash_id)
+
+    #def get_like_ids(self, hash_id):
+    #    return self.server.get_like_ids(hash_id)
+
+    #def get_recent_likes(self, hash_id):
+    #    return self.server.get_recent_likes(hash_id)
+
+    #def get_object_by_id(self, hash_id, fields=None):
+    #    return self.server.get_object_by_id(hash_id)
+
+    RECENT_LIKES_PAGES = 1
+
+    def __init__(self, access_token):
+        self.access_token = access_token
+        from film_common.utils.fb.graph import API
+        self.api = API(access_token)
+
+    def get_friend_id_list(self, hash_id):
+        return self.fetch_with_pagination(hash_id + '/friends', fields='id')
+
+    def get_close_friends_list(self, hash_id):
+        return set(self.fetch_with_pagination(hash_id + '/friendlists/close_friends', fields='members'))
+
+    def get_family_list(self, hash_id):
+        return self.fetch_with_pagination(hash_id + '/friendlists/family', fields='members')
+
+    def get_like_ids(self, hash_id):
+        return self.fetch_with_pagination(hash_id + '/likes', fields='id')
+
+    def get_recent_likes(self, hash_id):
+        return self.fetch_with_pagination(hash_id + '/likes', fields='id,name,category,created_time', limit=ProxyAPI.RECENT_LIKES_PAGES)
+
+    def get_object_by_id(self, hash_id, fields=None):
+        return self.api.get(hash_id, fields)
+
+    def fetch_with_pagination(self, initial_path, fields, handler=lambda data: (x['id'] for x in data), limit=None):
+        path = initial_path
+        handler_results = []
+        while True and (limit == None or limit > 0):
+            objs = self.api.get(path, fields=fields)
+            data = objs.get('data', ())
+            handler_results += handler(data)
+            paging = objs.get('paging')
+            path = paging and paging.get('next')
+            if limit:
+                limit -= 1
+            if not path:
+                break
+        return handler_results
+
+
