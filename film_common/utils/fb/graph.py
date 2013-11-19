@@ -22,6 +22,7 @@ class API(object):
         parts    = result.split( '=' )
         if len( parts ) == 2 and parts[0] == 'access_token':
             self.access_token = parts[1]
+        return self.access_token
 
     def get_params(self, **kw):
         self.json_response = kw.pop('json_response', True)

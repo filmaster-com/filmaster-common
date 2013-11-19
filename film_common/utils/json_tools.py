@@ -64,10 +64,13 @@ class SerializableCassandraModel():
         interface for cqlengine models to become json serializable
     """
     def __getstate__(self):
-        return dict((k, getattr(self, k)) for k in self._columns.keys() if getattr(self, k) is not None)
+        return {k: getattr(self, k) for k in self._columns.keys() if getattr(self, k) is not None}
 
     def __jsonhint__(self):
         return self.__class__, [], self.__getstate__()
+
+    def to_dict(self):
+        return self.__getstate__()
 
 
 
