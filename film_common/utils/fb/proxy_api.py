@@ -34,22 +34,22 @@ class ProxyAPI(object):
         self.api = API(access_token)
 
     def get_friend_id_list(self, hash_id):
-        return self.fetch_with_pagination(hash_id + '/friends', fields='id')
+        return self.fetch_with_pagination('/' + hash_id + '/friends', fields='id')
 
     def get_close_friends_list(self, hash_id):
-        return set(self.fetch_with_pagination(hash_id + '/friendlists/close_friends', fields='members'))
+        return set(self.fetch_with_pagination('/' + hash_id + '/friendlists/close_friends', fields='members'))
 
     def get_family_list(self, hash_id):
-        return self.fetch_with_pagination(hash_id + '/friendlists/family', fields='members')
+        return self.fetch_with_pagination('/' + hash_id + '/friendlists/family', fields='members')
 
     def get_like_ids(self, hash_id):
-        return self.fetch_with_pagination(hash_id + '/likes', fields='id')
+        return self.fetch_with_pagination('/' + hash_id + '/likes', fields='id')
 
     def get_recent_likes(self, hash_id):
-        return self.fetch_with_pagination(hash_id + '/likes', fields='id,name,category,created_time', limit=ProxyAPI.RECENT_LIKES_PAGES)
+        return self.fetch_with_pagination('/' + hash_id + '/likes', fields='id,name,category,created_time', limit=ProxyAPI.RECENT_LIKES_PAGES)
 
     def get_object_by_id(self, hash_id, fields=None):
-        return self.api.get(hash_id)
+        return self.api.get('/' + hash_id)
 
     def fetch_with_pagination(self, initial_path, fields, handler=lambda data: (x['id'] for x in data), limit=None):
         path = initial_path
