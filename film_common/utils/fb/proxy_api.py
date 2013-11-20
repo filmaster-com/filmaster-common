@@ -49,7 +49,7 @@ class ProxyAPI(object):
         return self.fetch_with_pagination(hash_id + '/likes', fields='id,name,category,created_time', limit=ProxyAPI.RECENT_LIKES_PAGES)
 
     def get_object_by_id(self, hash_id, fields=None):
-        return self.api.get(hash_id, fields)
+        return self.api.get(hash_id)
 
     def fetch_with_pagination(self, initial_path, fields, handler=lambda data: (x['id'] for x in data), limit=None):
         path = initial_path
