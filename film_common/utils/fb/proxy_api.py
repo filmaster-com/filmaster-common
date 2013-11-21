@@ -84,7 +84,7 @@ class ProxyAPI(object):
     def flatten_movie_data(self, fb_obj):
         result = []
         for item in fb_obj:
-            data_obj = fb_obj.get('data', None)
+            data_obj = item.get('data', None)
             if data_obj:
                 movie_obj = data_obj.get('movie', None)
                 if movie_obj:
