@@ -49,10 +49,13 @@ class ProxyAPI(object):
         return self.fetch_with_pagination('/' + hash_id + '/likes', fields='id,name,category,created_time', limit=ProxyAPI.RECENT_LIKES_PAGES)
 
     def get_watched_movies(self, hash_id):
-        return self.fetch_with_pagination('/' + hash_id + '/video.watches', fields='id')
+        fb_obj = self.fetch_with_pagination('/' + hash_id + '/video.watches', fields='id')
+        return self.flatten_movie_data(fb_obj)
 
     def get_wants_to_watch(self, hash_id):
-        return self.fetch_with_pagination('/' + hash_id + '/video.wants_to_watch', fields='id')
+        fb_obj = self.fetch_with_pagination('/' + hash_id + '/video.wants_to_watch', fields='')
+        return self.flatten_movie_data(fb_obj)
+
 
     def get_movies(self, hash_id):
         return self.fetch_with_pagination('/' + hash_id + '/movies', fields='id')
@@ -60,7 +63,7 @@ class ProxyAPI(object):
     def get_object_by_id(self, hash_id, fields=None):
         return self.api.get('/' + hash_id)
 
-    def fetch_with_pagination(self, initial_path, fields, handler=lambda data: (x['id'] for x in data), limit=None):
+    def fetch_with_pagination(self, initial_path, fields=None, handler=lambda data: (x['id'] for x in data), limit=None):
         path = initial_path
         handler_results = []
         while True and (limit == None or limit > 0):
@@ -75,4 +78,14 @@ class ProxyAPI(object):
                 break
         return handler_results
 
-
+    def flatten_movie_data(self, fb_obj):
+        result = []
+        for item in fb_obj:
+            data_obj = fb_obj.get('data', None)
+            if data_obj:
+                movie_obj = data_obj.get('movie', None)
+                if movie_obj:
+                    id_ = movie_obj.get('id', None)
+                    if id_:
+                        result.append(id_)
+        return result
