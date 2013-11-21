@@ -49,13 +49,13 @@ class ProxyAPI(object):
         return self.fetch_with_pagination('/' + hash_id + '/likes', fields='id,name,category,created_time', limit=ProxyAPI.RECENT_LIKES_PAGES)
 
     def get_watched_movies(self, hash_id):
-        return self.fetch_with_pagination('/' + hash_id + '/video.watches')
+        return self.fetch_with_pagination('/' + hash_id + '/video.watches', fields='id')
 
     def get_wants_to_watch(self, hash_id):
-        return self.fetch_with_pagination('/' + hash_id + '/video.wants_to_watch')
+        return self.fetch_with_pagination('/' + hash_id + '/video.wants_to_watch', fields='id')
 
     def get_movies(self, hash_id):
-        return self.fetch_with_pagination('/' + hash_id + '/movies')
+        return self.fetch_with_pagination('/' + hash_id + '/movies', fields='id')
 
     def get_object_by_id(self, hash_id, fields=None):
         return self.api.get('/' + hash_id)
