@@ -1,5 +1,7 @@
 #from film_common.utils.jsonrpc import Server
 
+PAGE_LIMIT=200
+
 class ProxyAPI(object):
 
     #def __init__(self, app_id):
@@ -68,7 +70,7 @@ class ProxyAPI(object):
         handler_results = []
         while True and (limit is None or limit > 0):
             if fields:
-                objs = self.api.get(path, fields=fields)
+                objs = self.api.get(path, fields=fields, limit=PAGE_LIMIT)
             else:
                 objs = self.api.get(path)
             data = objs.get('data', ())
