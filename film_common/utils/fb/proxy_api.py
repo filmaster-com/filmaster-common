@@ -1,6 +1,6 @@
 #from film_common.utils.jsonrpc import Server
 
-PAGE_LIMIT=200
+PAGE_LIMIT=300
 
 class ProxyAPI(object):
 
