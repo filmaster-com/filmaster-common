@@ -34,7 +34,6 @@ class RedisKeys(object):
     """
     def __init__(self, *keys):
         self.keys = keys
-        self._getters = []
 
     def create_redis_key_getters(self, some_object):
         for key in self.keys:
@@ -51,7 +50,6 @@ class RedisKeys(object):
                 d = key[3]
             getter = self.create_getter(n, d, redis_name)
             some_object.__dict__[name] = types.MethodType(getter, some_object)
-            self._getters.append((getattr(some_object, name), n))
 
         setattr(some_object, 'delete_keys', lambda: self.delete_keys())
 
@@ -67,18 +65,6 @@ class RedisKeys(object):
                 result_key += ':' + str(arg)
             return result_key
         return fun
-
-    def get_key_masks(self):
-        return [g[0](*(['*'] * g[1])) for g in self._getters]
-
-    def delete_keys(self):
-        for k in self.get_key_masks():
-            if '*' in k:
-                keys = redis.keys(k)
-                if keys:
-                    redis.delete(*keys)
-            else:
-                redis.delete(k)
 
 def remove_what_is_to_remove(to_remove_key_prefixes=None):
     if to_remove_key_prefixes is None:
