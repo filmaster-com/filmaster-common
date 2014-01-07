@@ -62,12 +62,11 @@ class ProxyAPI(object):
         return self.fetch_with_pagination('/' + hash_id + '/movies', fields='id')
 
     def get_object_by_id(self, hash_id, fields=None):
-        if self.cache:
-            cache_hit = self.cache.get(hash_id, None)
-            if cache_hit:
-                return cache_hit
-        else:
+        if not hasattr(self, 'cache'):
             self.cache = {}
+        cache_hit = self.cache.get(hash_id, None)
+        if cache_hit:
+            return cache_hit
         fb_obj = self.api.get('/' + hash_id)
         self.cache[hash_id] = fb_obj
         return fb_obj
