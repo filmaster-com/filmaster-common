@@ -58,12 +58,24 @@ class ProxyAPI(object):
         fb_obj = self.fetch_with_pagination('/' + hash_id + '/video.wants_to_watch', handler=lambda x: x)
         return self.flatten_movie_data(fb_obj)
 
-
     def get_movies(self, hash_id):
         return self.fetch_with_pagination('/' + hash_id + '/movies', fields='id')
 
     def get_object_by_id(self, hash_id, fields=None):
-        return self.api.get('/' + hash_id)
+        if not hasattr(self, 'cache'):
+            self.cache = {}
+        cache_hit = self.cache.get(hash_id, None)
+        if cache_hit:
+            return cache_hit
+        fb_obj = self.api.get('/' + hash_id)
+        self.cache[hash_id] = fb_obj
+        return fb_obj
+
+    def cache_items(self, id_list, fields):
+        import copy
+        self_with_cache = copy.deepcopy(self)
+        self_with_cache.cache = self.api.get('/', ids=','.join(id_list), fields=fields)
+        return self_with_cache
 
     def fetch_with_pagination(self, initial_path, fields=None, handler=lambda data: (x['id'] for x in data), limit=None):
         path = initial_path
