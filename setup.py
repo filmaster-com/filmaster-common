@@ -10,7 +10,7 @@ setup(
     name='filmaster-common',
     version='0.1',
     packages=['film_common'],
-    install_requires=[
+    install_requires=['pytz'
 
     ],
     include_package_data=True,
