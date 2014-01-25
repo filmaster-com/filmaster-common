@@ -1,2 +1,2 @@
-include README.md LICENSE
-recursive-include easy_timezones *.py
+include README
+recursive-include film_common *.py
