@@ -20,7 +20,7 @@ def single_instance_task(func):
 
         try:
             h = md5(settings.SECRET_KEY).hexdigest()
-            with acquire_lock("single_instance_task_%s_%s_%r_%r" % (g, func.__name__, args, kw)):
+            with acquire_lock("single_instance_task_%s_%s_%r_%r" % (h, func.__name__, args, kw)):
                 return func(*args, **kw)
         except acquire_lock.AlreadyAcquired, e:
             logging.warning("lock for %r already acquired" % func.__name__)
