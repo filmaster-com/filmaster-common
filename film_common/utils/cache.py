@@ -139,6 +139,8 @@ import hashlib
 # class for safe key generation
 # makes valid cache key from everything
 
+CACHE_PREFIXES = getattr(settings, "CACHE_PREFIXES", {})
+
 class Key(object):
     
     class _default_opts:
@@ -148,7 +150,7 @@ class Key(object):
 
     def __init__(self, prefix, *args):
         self.prefix = self._fmt_key(prefix)
-        self.opt = settings.CACHE_PREFIXES.get(prefix, self._default_opts)
+        self.opt = CACHE_PREFIXES.get(prefix, self._default_opts)
         
         if not self.opt.is_common:
             self.key = CACHE_MIDDLEWARE_KEY_PREFIX + self.prefix
