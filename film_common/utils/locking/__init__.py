@@ -53,4 +53,15 @@ class acquire_lock_dummy(AcquireLockBase):
     def __exit__(self, type, value, traceback):
         logger.debug("releasing dummy lock for %s", self.name)
 
+class acquire_lock_db(AcquireLockBase):
+    def __enter__(self):
+        from .models import Lock
+        lock, created = Lock.objects.get_or_create(name=self.name)
+        if not created:
+            raise self.AlreadyAcquired()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        from .models import Lock
+        Lock.objects.filter(name=self.name).delete()
 
