@@ -331,12 +331,9 @@ def _fix1_remove_undeleted_ratings(update=False):
                 pipe.execute()
     print total, len(all_keys), err
 
+from film_common.utils.locking import AcquireLockBase
 
-class acquire_lock(object):
-    def __init__(self, name, force=False):
-        self.name = name
-        self.force = force
-
+class acquire_lock(AcquireLockBase):
     def __enter__(self):
         if not redis.setnx('lock_%s' % self.name, 'locked') and not self.force:
             raise self.AlreadyAcquired('lock %s already acquired' % self.name)
@@ -344,6 +341,3 @@ class acquire_lock(object):
 
     def __exit__(self, type, value, traceback):
         redis.delete('lock_%s' % self.name)
-
-    class AlreadyAcquired(Exception):
-        pass

@@ -31,6 +31,7 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 
 CACHE_MIDDLEWARE_KEY_PREFIX = getattr(settings, 'CACHE_MIDDLEWARE_KEY_PREFIX', 'filmaster')
+CAN_SKIP_CACHE = getattr(settings, "CAN_SKIP_CACHE", False)
 
 # time periods
 A_QUARTER = 60*15
@@ -139,6 +140,8 @@ import hashlib
 # class for safe key generation
 # makes valid cache key from everything
 
+CACHE_PREFIXES = getattr(settings, "CACHE_PREFIXES", {})
+
 class Key(object):
     
     class _default_opts:
@@ -148,7 +151,7 @@ class Key(object):
 
     def __init__(self, prefix, *args):
         self.prefix = self._fmt_key(prefix)
-        self.opt = settings.CACHE_PREFIXES.get(prefix, self._default_opts)
+        self.opt = CACHE_PREFIXES.get(prefix, self._default_opts)
         
         if not self.opt.is_common:
             self.key = CACHE_MIDDLEWARE_KEY_PREFIX + self.prefix
@@ -211,7 +214,7 @@ class Key(object):
 from film_common.middleware.threadlocals import get_request
 
 def get(key):
-    if settings.CAN_SKIP_CACHE:
+    if CAN_SKIP_CACHE:
         request = get_request()
         if request and 'nocache' in request.GET \
                 and request.user.has_perm('can_skip_cache'):
@@ -225,7 +228,7 @@ def get(key):
     return ret
 
 def get_many(keys):
-    if settings.CAN_SKIP_CACHE:
+    if CAN_SKIP_CACHE:
         request = get_request()
         if request and 'nocache' in request.GET \
                 and request.user.has_perm('can_skip_cache'):

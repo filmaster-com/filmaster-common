@@ -27,3 +27,18 @@ class DictMerger(object):
         except KeyError:
             raise AttributeError
 
+    def keys(self):
+        return list(set(self.a.keys()) | set(self.b.keys()))
+
+    def __iter__(self):
+        return iter(self.keys())
+
+    def iteritems(self):
+        for k in self.keys():
+            v = self[k]
+            if isinstance(v, DictMerger):
+                v = dict(v.items())
+            yield (k, v)
+
+    def items(self):
+        return list(self.iteritems())

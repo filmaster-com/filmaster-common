@@ -10,8 +10,9 @@ setup(
     name='filmaster-common',
     version='0.1',
     packages=['film_common'],
-    install_requires=['pytz'
-
+    install_requires=[
+        'pytz',
+        'jsonrpclib',
     ],
     include_package_data=True,
     long_description=README,
