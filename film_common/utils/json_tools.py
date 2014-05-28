@@ -4,7 +4,10 @@ import uuid
 import pytz
 
 from film_common.utils.importlib import import_object
-from django.db.models.base import ModelState
+try:
+    from django.db.models.base import ModelState
+except:
+    ModelState = None
 
 def _hint(constructor, *args, **kw):
     if isinstance(kw.get('_state'), ModelState):
