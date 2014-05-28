@@ -76,7 +76,7 @@ def remove_what_is_to_remove(to_remove_key_prefixes=None):
             redis.delete(*rks)
 
 
-def _create_redis_connection():
+def create_redis_connection():
     import redis
     ret = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_DB)
 
@@ -84,7 +84,7 @@ def _create_redis_connection():
     return ret
 
 
-redis = SimpleLazyObject(_create_redis_connection)
+redis = SimpleLazyObject(create_redis_connection)
 
 
 def _rating_key(film_id=None, actor_id=None, director_id=None, type=1):
