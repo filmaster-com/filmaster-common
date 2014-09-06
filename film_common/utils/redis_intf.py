@@ -48,9 +48,6 @@ class RedisKeys(object):
         else:
             klass = klass_or_instance.__class__
 
-        if hasattr(klass, '_redis_keys_installed'):
-            return
-
         for key in self.keys:
             name = key[0]
             redis_name = key[1]
@@ -65,8 +62,6 @@ class RedisKeys(object):
                 d = key[3]
 
             setattr(klass, name, self.create_getter(n, d, redis_name))
-
-        klass._redis_keys_installed = True
 
     def create_getter(self, n, d, redis_name):
         def fun(other_self, *args):
