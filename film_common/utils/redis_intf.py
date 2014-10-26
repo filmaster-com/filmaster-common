@@ -17,6 +17,7 @@
 #-------------------------------------------------------------------------------
 import datetime
 from django.utils.functional import SimpleLazyObject
+from django.utils.encoding import smart_str
 import cPickle
 
 from django.conf import settings
@@ -65,15 +66,11 @@ class RedisKeys(object):
 
     def create_getter(self, n, d, redis_name):
         def fun(other_self, *args):
-            result_key = ''
-            for attr in d:
-                result_key += other_self.__dict__[attr] + ':'
-            result_key += redis_name
-
+            key_parts = [other_self.__dict__[attr] for attr in d]
+            key_parts.append(redis_name)
             assert len(args) == n
-            for arg in args:
-                result_key += ':' + str(arg)
-            return result_key
+            key_parts.extend(args)
+            return ':'.join(map(smart_str, key_parts))
         return fun
 
 def remove_what_is_to_remove(to_remove_key_prefixes=None):
