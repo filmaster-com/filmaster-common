@@ -17,6 +17,7 @@
 #-------------------------------------------------------------------------------
 import datetime
 from django.utils.functional import SimpleLazyObject
+from django.utils.encoding import smart_str
 import cPickle
 
 from django.conf import settings
@@ -35,7 +36,19 @@ class RedisKeys(object):
     def __init__(self, *keys):
         self.keys = keys
 
-    def create_redis_key_getters(self, some_object):
+    def __call__(self, cls):
+        """
+        Called when RedisKeys is used as class decorator (preferred way)
+        """
+        self.create_redis_key_getters(cls)
+        return cls
+
+    def create_redis_key_getters(self, klass_or_instance):
+        if isinstance(klass_or_instance, type):
+            klass = klass_or_instance
+        else:
+            klass = klass_or_instance.__class__
+
         for key in self.keys:
             name = key[0]
             redis_name = key[1]
@@ -48,22 +61,16 @@ class RedisKeys(object):
                 d = key[2]
             if len(key) > 3 and type(key[3]) == list:
                 d = key[3]
-            getter = self.create_getter(n, d, redis_name)
-            some_object.__dict__[name] = types.MethodType(getter, some_object)
 
-        setattr(some_object, 'delete_keys', lambda: self.delete_keys())
+            setattr(klass, name, self.create_getter(n, d, redis_name))
 
     def create_getter(self, n, d, redis_name):
         def fun(other_self, *args):
-            result_key = ''
-            for attr in d:
-                result_key += other_self.__dict__[attr] + ':'
-            result_key += redis_name
-
+            key_parts = [other_self.__dict__[attr] for attr in d]
+            key_parts.append(redis_name)
             assert len(args) == n
-            for arg in args:
-                result_key += ':' + str(arg)
-            return result_key
+            key_parts.extend(args)
+            return ':'.join(map(smart_str, key_parts))
         return fun
 
 def remove_what_is_to_remove(to_remove_key_prefixes=None):

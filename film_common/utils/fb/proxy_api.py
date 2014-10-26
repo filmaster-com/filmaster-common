@@ -61,6 +61,9 @@ class ProxyAPI(object):
     def get_movies(self, hash_id):
         return self.fetch_with_pagination('/' + hash_id + '/movies', fields='id')
 
+    def get_music(self, hash_id):
+        return self.fetch_with_pagination('/' + hash_id + '/music', fields='id')
+
     def get_object_by_id(self, hash_id, fields=None):
         caching = hasattr(self, 'cache')
         if caching:
