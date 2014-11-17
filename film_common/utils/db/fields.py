@@ -4,6 +4,10 @@ from django.db import models
 from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.exceptions import ValidationError
+try:
+    from django.utils.encoding import smart_unicode
+except ImportError:
+    pass
 
 # http://djangosnippets.org/comments/cr/15/1478/#c2282
 class JSONField(models.Field):
@@ -37,11 +41,11 @@ class JSONField(models.Field):
         """subclass may redefine this method to accept only some value types"""
         return True
 
-    def get_db_prep_save(self, value, **kw):
+    def get_db_prep_save(self, value, *args, **kwargs):
         """Convert our JSON object to a string before we save"""
         assert self.is_value_valid(value)
         value = json.dumps(value, cls=DjangoJSONEncoder) if value is not None else None
-        return super(JSONField, self).get_db_prep_save(value, **kw)
+        return super(JSONField, self).get_db_prep_save(value, *args, **kwargs)
 
     def formfield(self, **kw):
         defaults = {'widget': _JSONWidget, 'validators': [self.to_python]}
