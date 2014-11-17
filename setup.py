@@ -11,7 +11,8 @@ setup(
     version='0.1',
     packages=['film_common'],
     install_requires=[
-
+        'pytz',
+        'jsonrpclib',
     ],
     include_package_data=True,
     long_description=README,

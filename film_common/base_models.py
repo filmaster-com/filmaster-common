@@ -1,10 +1,11 @@
 import datetime
 from django.db import models
+from django.utils.timezone import now
 
 class ChangeLogManager(models.Manager):
     SYNC_DELAY = 10
     def since(self, sync_mark=None, delay=SYNC_DELAY):
-        end_time = datetime.datetime.now() - datetime.timedelta(seconds = self.SYNC_DELAY)
+        end_time = now() - datetime.timedelta(seconds = delay)
         objects = self.get_query_set()
         objects = objects.order_by('updated_at', self.model._meta.pk.name)
         objects = objects.filter(updated_at__lt=end_time)
@@ -17,6 +18,9 @@ class ChangeLogManager(models.Manager):
         t, id = sync_mark.split('|', 1)
         pk_name = self.model._meta.pk.name
         return models.Q(updated_at__gt=t)|models.Q(updated_at=t, **{'%s__gt' % pk_name: id})
+
+    def sync_mark_for(self, obj):
+        return "%s|%s" % (obj.updated_at, obj.pk)
 
 _model_meta = type(models.Model)
 
