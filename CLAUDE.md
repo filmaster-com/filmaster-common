@@ -104,3 +104,9 @@ database.
 - `utils/test.py` imports `django.test.simple`, removed in Django 1.6, so `TestCase`,
   `TestRunner` and everything importing them fail to import — including the tests in
   `film_common/tests/`.
+
+## License
+
+AGPL v3 or later (`LICENSE`). Only five modules carry the AGPL header — `middleware/__init__.py`,
+`middleware/threadlocals.py`, `utils/cache.py`, `utils/importlib.py`, `utils/redis_intf.py`;
+the rest have none. Preserve the header where it exists.
