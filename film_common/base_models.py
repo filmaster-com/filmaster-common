@@ -40,7 +40,7 @@ class RedisSyncable(models.Model):
     Subclass must define changelog_entry method.
     """
     # fields for maintaining db change log, ignored when object is saved to db
-    updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
+    updated_at = models.DateTimeField(auto_now=True)
     sync_source = models.CharField(max_length=16, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
 

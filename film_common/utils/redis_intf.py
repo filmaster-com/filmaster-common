@@ -85,7 +85,12 @@ def remove_what_is_to_remove(to_remove_key_prefixes=None):
 
 def create_redis_connection():
     import redis
-    ret = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_DB)
+    unix_socket = getattr(settings, 'REDIS_UNIX_SOCKET')
+    password = getattr(settings, 'REDIS_PASSWORD')
+    if unix_socket:
+        ret = redis.Redis(unix_socket_path=unix_socket, db=settings.REDIS_DB, password=password)
+    else:
+        ret = redis.Redis(settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_DB, password=password)
 
     settings.MAX_REDIS_MEMORY_USAGE = ret.config_get('maxmemory')
     return ret

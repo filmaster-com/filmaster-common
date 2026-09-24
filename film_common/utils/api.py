@@ -1,6 +1,6 @@
 from piston.emitters import Emitter, DateTimeAwareJSONEncoder
 from piston.validate_jsonp import is_valid_jsonp_callback_value
-from django.utils import simplejson
+import json
 
 API_PAGE_SIZE = 10
 
@@ -64,7 +64,7 @@ class JSONEmitter(Emitter):
         except:
             indent = None
 
-        seria = simplejson.dumps(self.construct(), cls=DateTimeAwareJSONEncoder, ensure_ascii=False, indent=indent)
+        seria = json.dumps(self.construct(), cls=DateTimeAwareJSONEncoder, ensure_ascii=False, indent=indent)
 
         # Callback
         if cb and is_valid_jsonp_callback_value(cb):
