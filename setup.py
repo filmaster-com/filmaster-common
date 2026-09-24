@@ -16,7 +16,7 @@ setup(
     ],
     include_package_data=True,
     long_description=README,
-    url='https://bitbucket.org/filmaster/filmaster-common',
+    url='https://github.com/filmaster-com/filmaster-common',
     author='filmaster.tv',
     author_email='dev@filmaster.tv',
     classifiers=[
