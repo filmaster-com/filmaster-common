@@ -1,0 +1,8 @@
+*.pyc
+*~
+*.orig
+*.rej
+*.bak
+*.DS_Store
+*.py_profile
+*.egg-info/
