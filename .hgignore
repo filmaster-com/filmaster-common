@@ -1,9 +1,0 @@
-syntax: glob
-
-*.pyc
-*~
-*.orig
-*.rej
-*.bak
-*.DS_Store
-*.py_profile
